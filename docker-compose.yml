@@ -1,0 +1,57 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: prf-mongo
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: prf-backend
+    expose:
+      - "5000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/bank_app
+      - SECRET_KEY=prf_secret_key
+    depends_on:
+      - mongo
+
+  transactions:
+    build:
+      context: ./transactions
+      dockerfile: Dockerfile
+    container_name: prf-transactions
+    expose:
+      - "7000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/bank_app
+    depends_on:
+      - mongo
+
+  studentportfolio:
+    build:
+      context: ./studentportfolio
+      dockerfile: Dockerfile
+    container_name: prf-studentportfolio
+    ports:
+      - "80"
+    depends_on:
+      - backend
+      - transactions
+
+  nginx:
+    image: nginx:alpine
+    container_name: prf-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - studentportfolio
+      - backend
+      - transactions
+
+volumes:
+  mongo_data:
