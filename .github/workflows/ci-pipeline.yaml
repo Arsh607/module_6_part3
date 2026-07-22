@@ -89,13 +89,13 @@ jobs:
       - name: Update image tags in GitOps manifests
         run: |
           sed -i "s|image: .*module_6_part3-backend:.*|image: ${{ env.BACKEND_IMAGE }}:${{ github.sha }}|" \
-            gitops/k8s/04-backend-deployment.yaml
+            gitops/k8s/backend-deployment.yaml
 
           sed -i "s|image: .*module_6_part3-transactions:.*|image: ${{ env.TRANSACTIONS_IMAGE }}:${{ github.sha }}|" \
-            gitops/k8s/07-transactions-deployment.yaml
+            gitops/k8s/transactions-deployment.yaml
 
           sed -i "s|image: .*module_6_part3-studentportfolio:.*|image: ${{ env.PORTFOLIO_IMAGE }}:${{ github.sha }}|" \
-            gitops/k8s/10-studentportfolio-deployment.yaml
+            gitops/k8s/studentportfolio-deployment.yaml
 
       - name: Commit and push updated manifests
         working-directory: gitops
